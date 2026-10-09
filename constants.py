@@ -16,4 +16,6 @@ B_c = (m_e**2 * c**3) / (e_charge * hbar)  # ~4.414e13 G
 # Pre-factors for Chandrasekhar EOS
 K_rho = (8 * np.pi * mu_e * m_u * (m_e * c)**3) / (3 * h**3)
 K_P = (np.pi * m_e**4 * c**5) / (3 * h**3)
-K_eps = (np.pi * m_e**4 * c**5) / (3 * h**3)
+# Electron energy-density prefactor m_e^4 c^5/(8 pi^2 hbar^3) = 3*K_P.
+# (Fixed Oct 2026: was K_P, which violated d(eps)/d(rho) = (eps+P)/rho.)
+K_eps = (np.pi * m_e**4 * c**5) / (h**3)
