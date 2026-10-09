@@ -49,6 +49,7 @@ References:
     Rahmansyah et al. 2021, ApJ 934 139  [anisotropic compact stars]
 """
 import numpy as np
+from scipy.optimize import brentq
 from scipy.integrate import solve_ivp
 from constants import *
 from eos import EOS
@@ -65,16 +66,28 @@ class TOVSolver:
     # ------------------------------------------------------------------
     def _get_magnetic(self, P_eff):
         """
-        Iteratively solve for (rho, eps_fluid, B, B_mag) given P_eff:
-            P_fluid = P_eff - B(rho)^2/(8*pi)
+        Solve P_fluid(rho) + B(rho)^2/(8*pi) = P_eff for rho exactly
+        (bracketed root-find in log rho), and return (rho, eps_fluid, B, B_mag).
+
+        Fixed Oct 2026: the previous 5-step fixed-point iteration did not
+        converge where B^2/8pi is comparable to P_fluid and biased magnetic
+        masses low by ~2%.
         """
-        B_mag = 0.0
-        for _ in range(5):
-            P_fluid = max(P_eff - B_mag, 0.0)
-            rho, eps = self.eos.get_rho_eps(P_fluid)
-            B = self.eos.get_B(max(rho, 1e4))
-            B_mag = B**2 / (8.0 * np.pi)
-        return rho, eps, B, B_mag
+        def resid(lr):
+            rho = 10.0**lr
+            P_fl, _ = self.eos.get_P_eps_from_rho(rho)
+            B = self.eos.get_B(rho)
+            return P_fl + B*B/(8.0*np.pi) - P_eff
+        lo, hi = 4.0, 11.5            # EOS table range in log10(rho)
+        if resid(lo) >= 0.0:          # below table: outermost envelope
+            rho = 10.0**lo
+        elif resid(hi) <= 0.0:
+            rho = 10.0**hi
+        else:
+            rho = 10.0**brentq(resid, lo, hi, xtol=1e-12, rtol=1e-12)
+        _, eps = self.eos.get_P_eps_from_rho(rho)
+        B = self.eos.get_B(rho)
+        return rho, eps, B, B*B/(8.0*np.pi)
 
     # ------------------------------------------------------------------
     def _tidal_F(self, r, M, P_eff, eps_tot, das_dphi):
@@ -214,7 +227,9 @@ class TOVSolver:
             eps_tot = eps_fl
             B_mag   = 0.0
 
-        rho_eff = rho + B_mag/c**2       # effective mass density
+        # Inertial mass density (eps_tot + P)/c^2 of the TOV equation uses the
+        # total energy density, not the rest-mass density (fixed Oct 2026).
+        rho_eff = eps_tot/c**2
 
         # Compactness factor for modified star
         C     = r**2 - (2.0*G*M*r) / c**2
@@ -373,8 +388,12 @@ class TOVSolver:
         else:
             y0 = [P_c_fl, M0_init, P_c_eff, M0_init]
 
+        # Surface: fluid pressure ~1e15. With a surface field Bs the total
+        # pressure never drops below Bs^2/8pi, so subtract that floor
+        # (fixed Oct 2026; previously the event could not trigger for Bs=1e9 G).
+        P_floor = (self.eos.Bs**2/(8.0*np.pi)) if self._magnetic else 0.0
         def event_surface(r, y):
-            return y[2] - 1e15
+            return y[2] - (1e15 + P_floor)
         event_surface.terminal  = True
         event_surface.direction = -1
         # index 2 is P_eff in both 4- and 5-variable systems ✓

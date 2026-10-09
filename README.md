@@ -1,3 +1,10 @@
+> **October 2026 update.** The structure code had four bugs (see `CHANGES.md`), now fixed. The
+> "F_geom ∝ r vs F_κ ∝ r²" result described below came from comparing a pressure with a force
+> density and is **withdrawn**: both corrections scale as r at the centre. New code for
+> self-consistent anisotropy, general-relativistic radial pulsations and first-order f(R)
+> diagnostics is in [`stability/`](stability/README.md). The description below refers to the
+> earlier version of the project and is kept for the record.
+
 # Disentangling f(R) Curvature from Magnetic Anisotropy in Super-Chandrasekhar White Dwarfs
 
 **Author:** Harsha Adhikary · Indian Institute of Science, Bangalore · harshaa@iisc.ac.in

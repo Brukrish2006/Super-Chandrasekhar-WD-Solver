@@ -101,15 +101,15 @@ class EOS:
         Number of tabulation points.
     """
     def __init__(self, mode='chandra', B_0=3.79e14, magnetic_tov=False,
-                 sigma=20, N_points=1000):
+                 sigma=20, N_points=1000, eta=0.2, gamma_B=0.9):
         self.mode = mode
         self.B_0 = B_0
         self.magnetic_tov = magnetic_tov
         self.sigma = sigma
         # Deb et al. B(rho) profile parameters
         self.Bs     = 1e9     # surface field [G]
-        self.eta    = 0.2
-        self.gamma_B = 0.9
+        self.eta    = eta
+        self.gamma_B = gamma_B
         self.rho_0  = 1e9    # reference density [g/cm³]
 
         rho_arr = np.logspace(4, 11.5, N_points)
@@ -184,7 +184,7 @@ class EOS:
     # ------------------------------------------------------------------
     def get_B(self, rho):
         """Return B(rho) [Gauss] following Deb et al. (2022) exponential profile."""
-        return self.Bs + self.B_0 * (1.0 - np.exp(-self.eta * (rho / self.rho_0)**self.gamma_B))
+        return self.Bs + self.B_0 * (1.0 - np.exp(-self.eta * (abs(rho) / self.rho_0)**self.gamma_B))
 
     # ------------------------------------------------------------------
     # EOS look-ups
