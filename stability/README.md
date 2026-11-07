@@ -16,5 +16,13 @@ Run every script from inside this folder (`cd stability`). Precomputed outputs a
 | `paper_configurations.py` | ω₀² for selected configurations. |
 | `pulsation_sequences.py`, `fig1data.py`, `make_figures.py` | Figure data and figures. |
 | `fr_perturbative_diagnostic.py` | First-order R + αR² stars with the corrected root solver: masses, ε_α (fractional change of dP/dr), \|αR₀\|, scalaron length and growth time (Table 3). |
+| `geometry_closure.py` | Geometry-consistent closures (transverse, radial, tangled, magnitude): κ* and masses at ρ_c = 10¹⁰ (Table 2) → `results/geometry_closure.json`. |
+| `topologies.py`, `topo_1e13.py` | κ* and masses for five radial field profiles (Fig. 3, Table S4) → `results/topologies*.json`. |
+| `local_closure.py` | Point-by-point closure κ(r)=min(κ_B, κ_max) vs volume average (Table 3) → `results/local_closure.json`. |
+| `energy_ratio.py` | E_mag/\|W\| along the self-consistent models → `results/energy_ratio.json`. |
+| `convergence.py` | Integration-tolerance study of masses and ω₀² (Table S2) → `results/convergence.json`. |
+| `fig_topologies.py`, `fig_pulsation.py` | Figs. 3 and 4 (`fig_pulsation.py` needs `figseq.pkl` from `pulsation_sequences.py`). |
 
 Validation: the non-magnetic GR sequence gives M_max = 1.4154 M☉ at ρ_c = 2.31×10¹⁰ g cm⁻³ (Mathew & Nandy 2014: 1.4166 M☉ at ≈2.3×10¹⁰), and with the `eq` prescription ω₀² = 0 coincides with the turning point to ≤0.2%.
+
+Scripts write their JSON to the current folder; the copies used in the paper are in `results/`. The CQG revision (CQG-117614) uses the release tagged `cqg-revision-1`.

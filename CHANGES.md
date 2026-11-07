@@ -1,5 +1,14 @@
 # Changelog
 
+## Nov 2026 — CQG revision 1 (tag `cqg-revision-1`)
+- Magnetic anisotropy now uses the geometry-consistent Maxwell stress: transverse Δ_B = −B²/8π,
+  radial Δ_B = +B²/4π with radial tension, tangled Δ_B = 0 (`geometry_closure.py`). Earlier versions
+  used Δ_B = +B²/8π, an upper bound that no single geometry realises.
+- New robustness tests: five field profiles (`topologies.py`), point-by-point closure
+  (`local_closure.py`), magnetic-to-gravitational energy ratio (`energy_ratio.py`), integration
+  convergence (`convergence.py`).
+- Pulsation figure marks the ¹⁶O (2.06×10¹⁰) and ¹²C (4.16×10¹⁰ g cm⁻³) capture densities.
+
 ## Oct 2026 — Revision 3 (bug fixes, radial pulsations, f(R) diagnostics)
 
 ### Bug fixes in the structure code
